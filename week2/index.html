@@ -173,9 +173,8 @@
             if (this.history?.length >= "10") {
               this.history.shift();
             }
-            this.history.push({result :`${this.input1} ${this.operator} ${this.input2} = ${this.output}`});
-            console.log(this.history)
-            localStorage.setItem("hexCal", this.history);
+            this.history.push(`${this.input1} ${this.operator} ${this.input2} = ${this.output}`);
+            localStorage.setItem("hexCal",JSON.stringify(this.history));
           },
           setErr(err, msg) {
             this.err = err;
@@ -189,8 +188,7 @@
         },
         mounted() {
           const oldHistory = localStorage.getItem("hexCal");
-          console.log(oldHistory);
-          if (oldHistory) this.history = oldHistory;
+          if (oldHistory) this.history = JSON.parse(oldHistory);
         },
       }).mount("#app");
     </script>
