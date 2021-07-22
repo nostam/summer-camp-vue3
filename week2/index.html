@@ -137,32 +137,30 @@
         methods: {
           compute() {
             if (this.operator === null) {
-              this.setErr(true, "請輸入運算方法");
+               return this.setErr(true, "請輸入運算方法");
             } else if (this.input1 === null || this.input2 === null) {
-              this.setErr("true", "請輸入數字");
+               return this.setErr("true", "請輸入數字");
             } else {
-              this.setErr(null, null);
+               this.setErr(null, null);
             }
-            if (!this.err) {
-              switch (this.operator) {
-                case "+":
-                  this.output = this.input1 + this.input2;
-                  break;
-                case "-":
-                  this.output = this.input1 - this.input2;
-                  break;
-                case "*":
-                  this.output = this.input1 * this.input2;
-                  break;
-                case "/":
-                  this.output = this.input1 / this.input2;
-                  break;
-                default:
-                  break;
+            switch (this.operator) {
+              case "+":
+                this.output = this.input1 + this.input2;
+                break;
+              case "-":
+                this.output = this.input1 - this.input2;
+                break;
+              case "*":
+                this.output = this.input1 * this.input2;
+                break;
+              case "/":
+                this.output = this.input1 / this.input2;
+                break;
+              default:
+                break;
               }
               this.addToHistory();
               this.reset();
-            }
           },
           reset() {
             this.input1 = null;
@@ -183,7 +181,6 @@
           clearHistory() {
             this.history = null;
             localStorage.removeItem("hexCal");
-
           }
         },
         mounted() {
