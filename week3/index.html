@@ -44,7 +44,7 @@
             新增
           </button>
         </div>
-        <div class="card text-center">
+        <div class="card">
           <ul class="list-group list-group-flush text-left" id="todoList">
             <li
               class="list-group-item p-0"
@@ -52,7 +52,7 @@
               v-for="task in filterTodos"
             >
               <!-- normal -->
-              <div class="d-flex mx-4" v-show="!task.editing">
+              <div class="d-flex mx-2" v-show="!task.editing">
                 <div
                   class="form-check my-2 w-100"
                   v-show="!task.editing"
@@ -86,7 +86,7 @@
                 <div class="input-group">
                   <input
                     type="text"
-                    class="form-control border-0 px-4"
+                    class="form-control border-0 mx-2 px-4 py-2"
                     v-model.trim="this.cacheStr"
                     v-show="task.editing"
                     @keyup.enter="saveTask(task.id)"
