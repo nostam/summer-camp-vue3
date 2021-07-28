@@ -49,20 +49,20 @@
             <li
               class="list-group-item p-0"
               :key="task.id"
-              v-for="(task, index) in todoList"
+              v-for="task in filterTodos"
             >
               <!-- normal -->
               <div class="d-flex mx-4" v-show="!task.editing">
                 <div
                   class="form-check my-2 w-100"
                   v-show="!task.editing"
-                  @dblclick="editTask(index)"
+                  @dblclick="editTask(task.id)"
                 >
                   <input
                     :id="task.id"
                     type="checkbox"
                     class="form-check-input"
-                    @click="updateTask(index, !task.completed)"
+                    @click="updateTask(task)"
                     :checked="task.completed"
                     v-show="!task.editing"
                   />
@@ -78,7 +78,7 @@
                   type="button"
                   class="btn-close m-0 remove align-self-center"
                   v-show="!task.editing"
-                  @click="remove(index)"
+                  @click="remove(task.id)"
                 ></button>
               </div>
               <!-- editing -->
@@ -89,14 +89,14 @@
                     class="form-control border-0 px-4"
                     v-model.trim="this.cacheStr"
                     v-show="task.editing"
-                    @keyup.enter="saveTask(index)"
+                    @keyup.enter="saveTask(task.id)"
                     @change="print"
                   />
                   <button
                     class="btn btn-warning border-0"
                     type="button"
                     v-show="task.editing"
-                    @click="saveTask(index)"
+                    @click="saveTask(task.id)"
                   >
                     保存
                   </button>
@@ -104,7 +104,7 @@
                     class="btn btn-danger border-0"
                     type="button"
                     v-show="task.editing"
-                    @click="cancelEdit(index)"
+                    @click="cancelEdit(task.id)"
                   >
                     取消
                   </button>
@@ -128,7 +128,7 @@
               <a href="#" class="me-3" @click.prevent="visibility = 'completed'"
                 >已完成</a
               >
-              <a href="#" @click.prevent="remove">清除所有任務</a>
+              <a href="#" @click.prevent="removeAll">清除所有任務</a>
             </div>
           </div>
         </div>
@@ -161,46 +161,58 @@
           };
         },
         methods: {
-          print() {
-            return console.log(this.todoList, this.cacheStr);
-          },
           addTask() {
             if (!this.newTodo) return;
             this.todoList.push(new todoTask(this.newTodo));
             this.newTodo = "";
             this.saveHistory();
           },
-          editTask(index) {
+          editTask(id) {
             if (this.isEditing) return;
             this.isEditing = true;
-            this.todoList[index].editing = true;
-            this.cacheStr = this.todoList[index].title;
+            this.todoList.forEach((el) => {
+              if (el.id === id) {
+                el.editing = true;
+                this.cacheStr = el.title;
+              }
+            });
           },
-          saveTask(index) {
+          saveTask(id) {
             if (!this.isEditing) return;
-            this.todoList[index].title = this.cacheStr;
-            this.cancelEdit(index);
+            this.todoList.forEach((el) => {
+              if (el.id === id) {
+                el.title = this.cacheStr;
+                el.editing = false;
+                this.cacheStr = null;
+                this.isEditing = false;
+              }
+            });
             this.saveHistory();
           },
-          cancelEdit(index) {
-            this.todoList[index].editing = false;
-            this.cacheStr = null;
-            this.isEditing = false;
+          cancelEdit(id) {
+            this.todoList.forEach((el) => {
+              if (el.id === id) {
+                el.editing = false;
+                this.cacheStr = null;
+                this.isEditing = false;
+              }
+            });
           },
-          updateTask(index, bln) {
-            this.todoList[index].completed = bln;
+          updateTask(task) {
+            this.todoList.forEach((el) => {
+              if (el.id === task.id) {
+                el.completed = !task.completed;
+                this.saveHistory();
+              }
+            });
+          },
+          remove(id) {
+            const newList = this.todoList.filter((el) => el.id !== id);
+            this.todoList = newList;
             this.saveHistory();
           },
-          remove(opt) {
-            console.log(opt);
-            if (typeof opt === "number") {
-              if (this.todoList.length === 1) return (this.todoList = []);
-              const newList = this.filterTodos().slice(opt, 1);
-              this.todoList = newList;
-            } else if (window.confirm("你確定要刪除全部 Todo?")) {
-              this.todoList = [];
-            }
-            return this.saveHistory();
+          removeAll() {
+            if (window.confirm("你確定要刪除全部 Todo?")) this.todoList = [];
           },
           saveHistory() {
             localStorage.setItem("hexGTD", JSON.stringify(this.todoList));
